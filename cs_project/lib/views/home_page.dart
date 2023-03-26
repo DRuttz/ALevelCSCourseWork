@@ -5,6 +5,7 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
@@ -17,8 +18,8 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('My Watchlist'),
-        shape: Border(bottom: BorderSide(color: Colors.black, width: 1)),
+        title: const Text('My Watchlist'),
+        shape: const Border(bottom: BorderSide(color: Colors.black, width: 1)),
         elevation: 0,
         backgroundColor: Colors.transparent,
         actions: [
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> {
           future: _animeDataFuture,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
@@ -59,7 +60,7 @@ class _HomePageState extends State<HomePage> {
                   leading:
                       Image.network(anime[WatchlistDatabase.columnPosterImage]),
                   trailing: IconButton(
-                    icon: Icon(Icons.delete),
+                    icon: const Icon(Icons.delete),
                     onPressed: () async {
                       await WatchlistDatabase.instance.delete(
                         anime[WatchlistDatabase.columnId],
@@ -74,7 +75,8 @@ class _HomePageState extends State<HomePage> {
                     final result = await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text('How many episodes have you watched?'),
+                        title:
+                            const Text('How many episodes have you watched?'),
                         content: TextField(
                           controller: controller,
                           keyboardType: TextInputType.number,
@@ -84,7 +86,7 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () {
                               Navigator.of(context).pop(controller.text);
                             },
-                            child: Text('OK'),
+                            child: const Text('OK'),
                           ),
                         ],
                       ),
@@ -112,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                   subtitle: animeData[index]['watched_episodes'] != null
                       ? animeData[index]['watched_episodes'] >=
                               anime[WatchlistDatabase.columnEpisodeCount]
-                          ? Text(
+                          ? const Text(
                               'Completed',
                               style: TextStyle(
                                 color: Colors.green,

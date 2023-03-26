@@ -1,5 +1,6 @@
 import 'dart:async';
 
+// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -27,11 +28,11 @@ class WatchlistDatabase {
   Future<void> _createDb(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $tableAnime (
-        ${columnId} INTEGER PRIMARY KEY AUTOINCREMENT,
-        ${columnTitle} TEXT,
-        ${columnPosterImage} TEXT,
-        ${columnEpisodeCount} INTEGER,
-        ${columnWatchedEpisodes} INTEGER
+        $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
+        $columnTitle TEXT,
+        $columnPosterImage TEXT,
+        $columnEpisodeCount INTEGER,
+        $columnWatchedEpisodes INTEGER
         
       )
     ''');

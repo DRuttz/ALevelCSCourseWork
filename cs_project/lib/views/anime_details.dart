@@ -44,8 +44,12 @@ class AnimeDetailScreen extends StatelessWidget {
                 ElevatedButton(
                   onPressed: () async {
                     await _addToWatchlist(animeData);
+                    const snackBar =
+                        SnackBar(content: Text('Added to watchlist.'));
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
-                  child: Text('Add to Watchlist'),
+                  child: const Text('Add to Watchlist'),
                 ),
               ],
             ),
