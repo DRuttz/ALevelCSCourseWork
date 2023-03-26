@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cs_project/watchlist_database.dart';
+import 'package:sqflite/sqflite.dart';
 
 class AnimeDetailScreen extends StatelessWidget {
   final dynamic animeData;
@@ -40,12 +42,30 @@ class AnimeDetailScreen extends StatelessWidget {
                     style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Add to Watchlist'),
+                  onPressed: () async {
+                    await _addToWatchlist(animeData);
+                  },
+                  child: Text('Add to Watchlist'),
                 ),
               ],
             ),
           ),
         ));
   }
+}
+
+Future<void> _addToWatchlist(dynamic animeData) async {
+  final animeAttributes = animeData['attributes'];
+  final database = await WatchlistDatabase.instance.database;
+  await database.insert(
+    WatchlistDatabase.tableAnime,
+    {
+      WatchlistDatabase.columnId: animeData['id'],
+      WatchlistDatabase.columnTitle: animeAttributes['canonicalTitle'],
+      WatchlistDatabase.columnPosterImage: animeAttributes['posterImage']
+          ['large'],
+      WatchlistDatabase.columnEpisodeCount: animeAttributes['episodeCount'],
+    },
+    conflictAlgorithm: ConflictAlgorithm.ignore,
+  );
 }

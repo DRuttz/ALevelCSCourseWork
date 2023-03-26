@@ -22,8 +22,8 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
     setState(() {
       _isLoading = true;
     });
-    final response = await http
-        .get(Uri.parse('https://kitsu.io/api/edge/anime?filter[text]=$query'));
+    final response = await http.get(Uri.parse(
+        'https://kitsu.io/api/edge/anime?filter[text]=$query')); // fetches all anime that match the query
 
     if (response.statusCode == 200) {
       final parsedJson = json.decode(response.body);
@@ -57,7 +57,7 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
-          },
+          }, // goes back to search_page.dart
         ),
       ),
       body: Column(
@@ -68,14 +68,15 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
               controller: _searchController,
               // ignore: prefer_const_constructors
               decoration: InputDecoration(
-                  hintText: 'Enter an anime title',
+                  hintText:
+                      'Enter an anime title', // creates the text that tells the user to input an anime name
                   enabledBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.redAccent),
                   ),
                   focusedBorder: const UnderlineInputBorder(
                     borderSide: BorderSide(color: Colors.redAccent),
                   )),
-            ),
+            ), // creates the text field where the user can input their search terms
           ),
           ElevatedButton(
             onPressed: () {
@@ -86,11 +87,11 @@ class _AnimeSearchScreenState extends State<AnimeSearchScreen> {
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
             child: const Text('Search'),
-          ),
+          ), // creates the elevated button which calls the search anime function and passes the text inputted into the text field as query
           _isLoading
               ? const Center(
                   child: CircularProgressIndicator(),
-                )
+                ) //displays a circular progress indicator
               : Expanded(
                   child: ListView.builder(
                     itemCount: _searchResults.length,
