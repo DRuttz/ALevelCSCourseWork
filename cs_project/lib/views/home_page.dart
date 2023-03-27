@@ -1,43 +1,62 @@
 import 'package:flutter/material.dart';
 import 'package:cs_project/watchlist_database.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
-
+  const HomePage({Key? key, required this.isDarkModeEnabled}) : super(key: key);
+  final bool isDarkModeEnabled;
   @override
   // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
-}
+} // creates the stateful widget which will display the watchlist database
 
 class _HomePageState extends State<HomePage> {
-  bool _isListViewVisible = true;
+  // creates the HomePageState which is displayed by the HomePage widget
+  bool _isListViewVisible =
+      true; //boolean logic for whether the list shall bew viewable or not.
   Future<List<Map<String, dynamic>>> _animeDataFuture =
-      WatchlistDatabase.instance.getAll();
+      WatchlistDatabase.instance.getAll(); // calls all of the database data
 
   @override
   Widget build(BuildContext context) {
+    print('home isDarkModeEnabled: ${widget.isDarkModeEnabled}');
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Watchlist'),
-        shape: const Border(bottom: BorderSide(color: Colors.black, width: 1)),
-        elevation: 0,
-        backgroundColor: Colors.transparent,
+        title: Text(
+          'My Watchlist',
+          style: TextStyle(
+              color: widget.isDarkModeEnabled ? Colors.white : Colors.white),
+        ),
+        shape: const Border(
+            bottom: BorderSide(
+                color: Colors.black,
+                width:
+                    1)), // creates the thin line between watchlist and the animes
+        elevation:
+            0, // causes there to not be any shadow between the watchlist appbar and animes
+        backgroundColor: Colors.grey[850], // makes the app bar transparent
         actions: [
           IconButton(
-            icon: Icon(
-                _isListViewVisible ? Icons.visibility_off : Icons.visibility),
+            // creates a button
+            icon: Icon(_isListViewVisible
+                ? Icons.visibility_off
+                : Icons.visibility), //changes the appearance of the button
             onPressed: () {
               setState(() {
-                _isListViewVisible = !_isListViewVisible;
+                _isListViewVisible =
+                    !_isListViewVisible; // changes the boolean value of isListViewVisible
               });
             },
           ),
         ],
       ),
       body: Visibility(
-        visible: _isListViewVisible,
+        //visibility class, can hide or show the child
+        visible:
+            _isListViewVisible, // links the visibility class to the boolean variable
         child: FutureBuilder<List<Map<String, dynamic>>>(
-          future: _animeDataFuture,
+          future:
+              _animeDataFuture, // sets the future to the received database data
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return const Center(
@@ -57,13 +76,18 @@ class _HomePageState extends State<HomePage> {
 
                 return ListTile(
                   title: Text(anime[WatchlistDatabase.columnTitle]),
+                  // sets the title to the title of the anime at the current index on the database
                   leading:
                       Image.network(anime[WatchlistDatabase.columnPosterImage]),
+                  // displays the poster of the anime at the current index on the database
                   trailing: IconButton(
+                    // creates a button
                     icon: const Icon(Icons.delete),
+                    // sets the button icon to a bin
                     onPressed: () async {
                       await WatchlistDatabase.instance.delete(
                         anime[WatchlistDatabase.columnId],
+                        // calls the delete method to remove the anim from the database
                       );
                       setState(() {
                         // Rebuild the future to show updated data
@@ -104,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                         );
 
                         setState(() {
-                          // Rebuild the future to show updated data
+                          // Updates the displayed list with the updated data on the database
                           _animeDataFuture =
                               WatchlistDatabase.instance.getAll();
                         });

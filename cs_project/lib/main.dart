@@ -2,83 +2,126 @@ import 'package:cs_project/views/home_page.dart';
 import 'package:cs_project/views/search_page.dart';
 import 'package:cs_project/views/settings_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(
-      const MyApp()); // runs the app when the icon is pressed on the phones app menu
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  // displays everything programmed into the app
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isDarkModeEnabled = false;
+  late SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() {
+        _prefs = prefs;
+        _isDarkModeEnabled = _prefs.getBool('isDarkModeEnabled') ?? true;
+      });
+    });
+  }
+
+  void _toggleDarkMode(bool value) {
+    setState(() {
+      _isDarkModeEnabled = value;
+      _prefs.setBool('isDarkModeEnabled', value);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false, // hides the debug notification
-      theme: ThemeData(
-        // sets theme of app
-        brightness: Brightness.dark, // sets the theme to dark
+      debugShowCheckedModeBanner: false,
+      theme: _isDarkModeEnabled
+          ? ThemeData.dark()
+          : ThemeData.light(), // set theme based on toggle
+      home: RootPage(
+        toggleDarkMode: _toggleDarkMode, // pass function to toggle theme
+        isDarkModeEnabled: _isDarkModeEnabled, // pass current theme value
       ),
-      home: const RootPage(), // displays the root page state
     );
   }
 }
 
 class RootPage extends StatefulWidget {
-  const RootPage({super.key});
+  const RootPage({
+    Key? key,
+    required this.toggleDarkMode,
+    required this.isDarkModeEnabled,
+  }) : super(key: key);
+
+  final Function(bool) toggleDarkMode;
+  final bool isDarkModeEnabled;
 
   @override
   State<RootPage> createState() => _RootPageState();
 }
 
 class _RootPageState extends State<RootPage> {
-  int currentPage = 0; // contains the index of the current page
-  // ignore: constant_identifier_names
-  static const List<Widget> _Pages = <Widget>[
-    // creates a scaffold which contains the program in each folder
-    Scaffold(
-      body: HomePage(),
-    ),
-    Scaffold(
-      body: SearchPage(),
-    ),
-    Scaffold(
-      body: SettingsPage(),
-    ),
-  ];
+  int _currentPage = 0;
+  late List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    final bool isDarkModeEnabled = widget.isDarkModeEnabled;
+    _pages = [
+      Scaffold(
+        body: HomePage(isDarkModeEnabled: isDarkModeEnabled),
+      ),
+      const Scaffold(
+        body: SearchPage(),
+      ),
+      Scaffold(
+        body: SettingsPage(
+          toggleDarkMode: widget.toggleDarkMode,
+          isDarkModeEnabled: isDarkModeEnabled,
+        ),
+      ),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    print('isDarkModeEnabled: ${widget.isDarkModeEnabled}');
     return Scaffold(
-      // as flutter is essentially multiple widgets placed over each other,
-      // the scaffold is responsible for structuring these widgets
       appBar: AppBar(
         backgroundColor: Colors.redAccent,
         title: const Text('AniDiary'),
       ),
       body: Center(
-        child: _Pages.elementAt(currentPage), // displays the menus
+        child: _pages.elementAt(_currentPage),
       ),
       bottomNavigationBar: NavigationBar(
-        // creates the navigation bar and sets the destinations
         destinations: const [
           NavigationDestination(
-              icon: Icon(Icons.home),
-              label: 'home'), //navigation button for the home menu
+            icon: Icon(Icons.home),
+            label: 'home',
+          ),
           NavigationDestination(
-              icon: Icon(Icons.book),
-              label: 'browse'), //navigation button for the browse menu
+            icon: Icon(Icons.book),
+            label: 'browse',
+          ),
           NavigationDestination(
-              icon: Icon(Icons.settings),
-              label: 'settings'), //navigation button for the settings menu
+            icon: Icon(Icons.settings),
+            label: 'settings',
+          ),
         ],
         onDestinationSelected: (int index) {
-          // changess the current page to the index of the button pressed
           setState(() {
-            currentPage = index;
+            _currentPage = index;
           });
         },
-        selectedIndex: currentPage,
+        selectedIndex: _currentPage,
       ),
     );
   }

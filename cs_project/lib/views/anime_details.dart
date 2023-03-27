@@ -43,11 +43,14 @@ class AnimeDetailScreen extends StatelessWidget {
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () async {
-                    await _addToWatchlist(animeData);
-                    const snackBar =
-                        SnackBar(content: Text('Added to watchlist.'));
+                    await _addToWatchlist(
+                        animeData); // adds anime data to data base
+                    const snackBar = SnackBar(
+                        content: Text(
+                            'Added to watchlist.')); // creates snackbar that says "added to watchlist at the bottom of the screen"
                     // ignore: use_build_context_synchronously
-                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(snackBar); // displays snack bar
                   },
                   child: const Text('Add to Watchlist'),
                 ),
@@ -62,7 +65,7 @@ Future<void> _addToWatchlist(dynamic animeData) async {
   final animeAttributes = animeData['attributes'];
   final database = await WatchlistDatabase.instance.database;
   await database.insert(
-    WatchlistDatabase.tableAnime,
+    WatchlistDatabase.tableAnimeWatching,
     {
       WatchlistDatabase.columnId: animeData['id'],
       WatchlistDatabase.columnTitle: animeAttributes['canonicalTitle'],
